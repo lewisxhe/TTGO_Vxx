@@ -6,6 +6,10 @@
 #include <FS.h>
 #include <SD.h>
 
+
+#define TTGO_T4_V12
+// #define TTGO_T4_V13
+
 #define BUTTON_1 39
 #define BUTTON_2 37
 #define BUTTON_3 38
@@ -22,10 +26,20 @@ SPIClass *sdObj = nullptr;
 #define ENABLE_SPI_SD
 
 
-#define SD_SPI_CS 13   
-#define SD_SPI_MOSI 15 
-#define SD_SPI_MISO 2 
-#define SD_SPI_CLK 14 
+#ifdef TTGO_T4_V13
+#define ENABLE_BUZZER
+#endif
+
+#ifdef ENABLE_BUZZER
+#define SPEAKER_PWD     19
+#define SPEAKER_PIN     25
+#define CHANNEL_0       0
+#endif
+
+#define SD_SPI_CS 13
+#define SD_SPI_MOSI 15
+#define SD_SPI_MISO 2
+#define SD_SPI_CLK 14
 
 #define I2C_SDA 21
 #define I2C_SCL 22
@@ -46,6 +60,19 @@ bool setPowerBoostKeepOn(int en)
     return Wire.endTransmission() == 0;
 }
 
+
+void playSound(void)
+{
+#ifdef ENABLE_BUZZER
+    digitalWrite(SPEAKER_PWD, HIGH);
+    delay(200);
+    ledcWriteTone(CHANNEL_0, 1000);
+    delay(200);
+    ledcWriteTone(CHANNEL_0, 0);
+    delay(200);
+    digitalWrite(SPEAKER_PWD, LOW);
+#endif
+}
 
 void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
 {
@@ -89,7 +116,13 @@ void button1Func()
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
     tft.fillScreen(TFT_BLACK);
     tft.setTextDatum(MC_DATUM);
+#ifdef ENABLE_BUZZER
+    tft.drawString("Speaker Test", tft.width() / 2, tft.height() / 2);
+    playSound();
+#else
     tft.drawString("Button Undefined function", tft.width() / 2, tft.height() / 2);
+#endif
+
 }
 
 void button2Func()
@@ -205,6 +238,14 @@ void setup()
     tft.setCursor(0, 0);
 
     Wire.begin(I2C_SDA, I2C_SCL);
+
+#ifdef ENABLE_BUZZER
+    pinMode(SPEAKER_PWD, OUTPUT);
+    ledcSetup(CHANNEL_0, 1000, 8);
+    ledcAttachPin(SPEAKER_PIN, CHANNEL_0);
+    playSound();
+    playSound();
+#endif
 
     spisd_test();
     button1.attachClick(button1Func);

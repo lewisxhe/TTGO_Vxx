@@ -7,7 +7,7 @@
 #define TFT_MOSI 23
 #define TFT_SCLK 18
 #define TFT_CS   27  // Chip select control pin
-#define TFT_DC   26  // Data Command control pin
+#define TFT_DC   32  // Data Command control pin
 #define TFT_RST   5  // Reset pin (could connect to RST pin)
 
 #define SPI_FREQUENCY  80000000

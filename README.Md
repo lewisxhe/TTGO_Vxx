@@ -1,4 +1,4 @@
-TTGO T4 V1.2 TestCode
+TTGO T4 TestCode
 ===========================
 
 ## 1.Install the following dependency library files:

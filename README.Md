@@ -1,13 +1,15 @@
 # TTGO T10 & T4 TEST CODE
 
 
+![](images/1.png)
+
 ## 1.Install the following dependency library files:
 - [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)
 - [Button2](https://github.com/lewisxhe/Button2)
 
 
 ## 2.TFT_eSPI settings
-- Move or copy TX_Vxx.h to `TFT_eSPI/User_Setups/`
+- Move or copy `User_Setups/TX_Vxx.h` to `TFT_eSPI/User_Setups/`
 - Add `#include <User_Setups/TX_Vxx.h>` to  `TFT_eSPI/User_Setup_Select.h`
   
 

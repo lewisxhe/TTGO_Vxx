@@ -18,6 +18,7 @@ Magnetometer_t mag;
 MPU9250 mpu(i2c);
 #endif
 
+SPIClass sdSPI(VSPI);
 #define IP5306_ADDR         0X75
 #define IP5306_REG_SYS_CTL0 0x00
 
@@ -132,13 +133,11 @@ void button_loop()
     }
 }
 
-
 void spisd_test()
 {
     if (SD_CS >  0) {
         tft.fillScreen(TFT_BLACK);
         tft.setTextDatum(MC_DATUM);
-        SPIClass sdSPI(VSPI);
         sdSPI.begin(SD_SCLK, SD_MISO, SD_MOSI, SD_CS);
         if (!SD.begin(SD_CS, sdSPI)) {
             tft.setTextFont(2);
@@ -287,6 +286,7 @@ void setup()
 #endif
     }
     btnscanT.attach_ms(30, button_loop);
+
 }
 
 

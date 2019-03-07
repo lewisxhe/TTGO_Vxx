@@ -6,10 +6,10 @@
 #define TFT_RST     5  // Reset pin (could connect to RST pin)
 #define TFT_BL      4  // Dispaly backlight control pin
 
-#define SD_MISO     13
+#define SD_MISO     2
 #define SD_MOSI     15
-#define SD_SCLK     2
-#define SD_CS       14
+#define SD_SCLK     14
+#define SD_CS       13
 
 #define I2C_SDA     21
 #define I2C_SCL     22

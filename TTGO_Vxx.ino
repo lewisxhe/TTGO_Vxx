@@ -93,6 +93,7 @@ void button_init()
         pBtns[i] = Button2(g_btns[i]);
         pBtns[i].setPressedHandler(button_callback);
     }
+    #if defined(T10_V18) || defined(T4_V13)
     pBtns[0].setLongClickHandler([](Button2 & b) {
 
         int x = tft.width() / 2 ;
@@ -124,6 +125,7 @@ void button_init()
         esp_sleep_enable_ext0_wakeup((gpio_num_t )BUTTON_1, LOW);
         esp_deep_sleep_start();
     });
+    #endif
 }
 
 void button_loop()
@@ -286,7 +288,6 @@ void setup()
 #endif
     }
     btnscanT.attach_ms(30, button_loop);
-
 }
 
 

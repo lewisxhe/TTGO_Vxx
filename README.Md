@@ -12,6 +12,14 @@
 - Move or copy `User_Setups/TX_Vxx.h` to `TFT_eSPI/User_Setups/`
 - Add `#include <User_Setups/TX_Vxx.h>` to  `TFT_eSPI/User_Setup_Select.h`
   
+## 3.First Use
+- The first time you need to change the board model in `board_def.h`, otherwise the compiler will report an error.
+    ```
+    // #define T4_V12 
+    // #define T4_V13
+    // #define T10_V14
+    // #define T10_V18
+    ```
 
 ## T10
 | Name        | V18    |

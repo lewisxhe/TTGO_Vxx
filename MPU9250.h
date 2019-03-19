@@ -7,7 +7,7 @@
 
 #ifdef ENABLE_MPU9250
 
-#define MPU9250_ADDRESS 0x69 //0x68
+#define MPU9250_ADDRESS 0x68
 
 #define MAG_ADDRESS 0x0C
 

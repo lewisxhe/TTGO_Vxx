@@ -1,3 +1,23 @@
+
+// #define T4_V12
+// #define T4_V13
+// #define T10_V14
+// #define T10_V18
+
+
+#if defined (T10_V18)
+#include "T10_V18.h"
+#elif defined(T10_V14)
+#include "T10_V14.h"
+#elif defined(T4_V12)
+#include "T4_V12.h"
+#elif defined(T4_V13)
+#include "T4_V13.h"
+#else
+#error "please select board version"
+#endif
+
+
 #include <TFT_eSPI.h>
 #include <SPI.h>
 #include "WiFi.h"
@@ -5,7 +25,6 @@
 #include <Ticker.h>
 #include <Button2.h>
 #include <SD.h>
-#include "board_def.h"
 
 TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
 
@@ -93,7 +112,7 @@ void button_init()
         pBtns[i] = Button2(g_btns[i]);
         pBtns[i].setPressedHandler(button_callback);
     }
-    #if defined(T10_V18) || defined(T4_V13)
+#if defined(T10_V18) || defined(T4_V13)
     pBtns[0].setLongClickHandler([](Button2 & b) {
 
         int x = tft.width() / 2 ;
@@ -125,7 +144,7 @@ void button_init()
         esp_sleep_enable_ext0_wakeup((gpio_num_t )BUTTON_1, LOW);
         esp_deep_sleep_start();
     });
-    #endif
+#endif
 }
 
 void button_loop()
@@ -263,6 +282,32 @@ void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
 void setup()
 {
     Serial.begin(115200);
+    delay(1000);
+
+    //Pin out Dump
+    Serial.printf("Current select %s version\n", BOARD_VRESION);
+    Serial.printf("TFT_MISO:%d\n", TFT_MISO);
+    Serial.printf("TFT_MOSI:%d\n", TFT_MOSI);
+    Serial.printf("TFT_SCLK:%d\n", TFT_SCLK);
+    Serial.printf("TFT_CS:%d\n", TFT_CS);
+    Serial.printf("TFT_DC:%d\n", TFT_DC);
+    Serial.printf("TFT_RST:%d\n", TFT_RST);
+    Serial.printf("TFT_BL:%d\n", TFT_BL);
+    Serial.printf("SD_MISO:%d\n", SD_MISO);
+    Serial.printf("SD_MOSI:%d\n", SD_MOSI);
+    Serial.printf("SD_SCLK:%d\n", SD_SCLK);
+    Serial.printf("SD_CS:%d\n", SD_CS);
+    Serial.printf("I2C_SDA:%d\n", I2C_SDA);
+    Serial.printf("I2C_SCL:%d\n", I2C_SCL);
+    Serial.printf("SPEAKER_PWD:%d\n", SPEAKER_PWD);
+    Serial.printf("SPEAKER_OUT:%d\n", SPEAKER_OUT);
+    Serial.printf("ADC_IN:%d\n", ADC_IN);
+    Serial.printf("BUTTON_1:%d\n", BUTTON_1);
+    Serial.printf("BUTTON_2:%d\n", BUTTON_2);
+    Serial.printf("BUTTON_3:%d\n", BUTTON_3);
+#ifdef BUTTON_4
+    Serial.printf("BUTTON_4:%d\n", BUTTON_4);
+#endif
 
     tft.init();
     tft.setRotation(0);
@@ -303,8 +348,12 @@ void loop()
         tft.setTextColor(TFT_GREEN, TFT_BLACK);
         tft.fillScreen(TFT_BLACK);
         tft.setTextDatum(MC_DATUM);
+#ifdef T4_V12
+        tft.drawString("Undefined function", tft.width() / 2, tft.height() / 2);
+#else
         tft.drawString("Buzzer Test", tft.width() / 2, tft.height() / 2);
         playSound();
+#endif
         break;
     case 3:
 #ifdef ENABLE_MPU9250

@@ -54,6 +54,7 @@
 | TFT_CS      | 27      | 27      |
 | TFT_DC      | 26      | 32      |
 | TFT_RST     | 5       | 5       |
+| TFT_BL      | N/A     | 4       |
 | SD_MISO     | 2       | 2       |
 | SD_MOSI     | 15      | 15      |
 | SD_SCLK     | 14      | 14      |

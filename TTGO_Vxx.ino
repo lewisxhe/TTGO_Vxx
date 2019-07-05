@@ -1,5 +1,7 @@
 
-// #define T4_V12
+// The first time you need to define the board model and version
+
+#define T4_V12
 // #define T4_V13
 // #define T10_V14
 // #define T10_V18

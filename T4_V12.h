@@ -4,7 +4,7 @@
 // #define TFT_CS      27  // Chip select control pin
 // #define TFT_DC      26  // Data Command control pin
 // #define TFT_RST     5  // Reset pin (could connect to RST pin)
-#define TFT_BL      4  // Dispaly backlight control pin
+#define TFT_BL       -1  // Dispaly backlight control pin
 
 #define SD_MISO     13
 #define SD_MOSI     15

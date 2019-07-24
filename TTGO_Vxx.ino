@@ -1,11 +1,11 @@
 
 // The first time you need to define the board model and version
 
-#define T4_V12
+// #define T4_V12
 // #define T4_V13
 // #define T10_V14
 // #define T10_V18
-
+// #define T10_V20
 
 #if defined (T10_V18)
 #include "T10_V18.h"
@@ -15,6 +15,8 @@
 #include "T4_V12.h"
 #elif defined(T4_V13)
 #include "T4_V13.h"
+#elif defined(T10_V20)
+#include "T10_V20.h"
 #else
 #error "please select board version"
 #endif
@@ -31,12 +33,8 @@
 TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
 
 #ifdef ENABLE_MPU9250
-#include "MPU9250.h"
-#include "I2CBus.h"
-Accelerometer_t acce;
-Gyroscope_t gyro;
-Magnetometer_t mag;
-MPU9250 mpu(i2c);
+#include "sensor.h"
+extern MPU9250 IMU;
 #endif
 
 SPIClass sdSPI(VSPI);
@@ -114,52 +112,55 @@ void button_init()
         pBtns[i] = Button2(g_btns[i]);
         pBtns[i].setPressedHandler(button_callback);
     }
-#if defined(T10_V18) || defined(T4_V13)
+#if defined(T10_V18) || defined(T4_V13) ||defined(T10_V20) || defined(T10_V14)
+#if defined(T10_V18) || defined(T4_V13)|| defined(T10_V14)
     pBtns[0].setLongClickHandler([](Button2 & b) {
+#elif defined(T10_V20)
+    pBtns[1].setLongClickHandler([](Button2 & b) {
+#endif
 
         int x = tft.width() / 2 ;
         int y = tft.height() / 2 - 30;
         int r = digitalRead(TFT_BL);
-
+        tft.setTextSize(1);
         tft.setTextColor(TFT_GREEN, TFT_BLACK);
         tft.setTextDatum(MC_DATUM);
         tft.fillScreen(TFT_BLACK);
+#if defined(T10_V14)
         tft.drawString(r ? "Backlight OFF" : "Backlight ON", x, y);
         tft.drawString("IP5306 KeepOn ", x - 20, y + 30);
 
         bool isOk = setPowerBoostKeepOn(1);
         tft.setTextColor(isOk ? TFT_GREEN : TFT_RED, TFT_BLACK);
         tft.drawString( isOk ? "PASS" : "FAIL", x + 50, y + 30);
-        if (!isOk) {
-            char *str = Wire.getErrorText(Wire.lastError());
-            String err = "Wire " + String(str);
-            tft.drawString( err, x + 50, y + 60);
-            y += 60;
-        } else {
-            y += 30;
-        }
+        y += 30;
+#endif
         tft.setTextColor(TFT_GREEN, TFT_BLACK);
         tft.drawString("Press again to wake up", x - 20, y + 30);
-
-        delay(6000);
+#ifdef ENABLE_MPU9250
+        IMU.setSleepEnabled(true);
+#endif
+        delay(3000);
+        tft.writecommand(ST7735_SLPIN);
+        tft.writecommand(ST7735_DISPOFF);
         digitalWrite(TFT_BL, !r);
-        esp_sleep_enable_ext0_wakeup((gpio_num_t )BUTTON_1, LOW);
+        delay(1000);
+        // esp_sleep_enable_ext0_wakeup((gpio_num_t )BUTTON_1, LOW);
+        esp_sleep_enable_ext1_wakeup(((uint64_t)(((uint64_t)1) << BUTTON_1)), ESP_EXT1_WAKEUP_ALL_LOW);
         esp_deep_sleep_start();
     });
 #endif
 }
 
-void button_loop()
-{
+void button_loop() {
     for (int i = 0; i < sizeof(g_btns) / sizeof(g_btns[0]); ++i) {
         pBtns[i].loop();
     }
 }
 
-void spisd_test()
-{
+void spisd_test() {
+    tft.fillScreen(TFT_BLACK);
     if (SD_CS >  0) {
-        tft.fillScreen(TFT_BLACK);
         tft.setTextDatum(MC_DATUM);
         sdSPI.begin(SD_SCLK, SD_MISO, SD_MOSI, SD_CS);
         if (!SD.begin(SD_CS, sdSPI)) {
@@ -175,23 +176,18 @@ void spisd_test()
         }
         delay(2000);
     }
-
 }
 
 
-void playSound(void)
-{
+void playSound(void) {
     if (SPEAKER_OUT > 0) {
-
         if (SPEAKER_PWD > 0) {
             digitalWrite(SPEAKER_PWD, HIGH);
             delay(200);
         }
-
         ledcWriteTone(CHANNEL_0, 1000);
         delay(200);
         ledcWriteTone(CHANNEL_0, 0);
-
         if (SPEAKER_PWD > 0) {
             delay(200);
             digitalWrite(SPEAKER_PWD, LOW);
@@ -199,8 +195,7 @@ void playSound(void)
     }
 }
 
-void buzzer_test()
-{
+void buzzer_test() {
     if (SPEAKER_OUT > 0) {
         if (SPEAKER_PWD > 0) {
             pinMode(SPEAKER_PWD, OUTPUT);
@@ -212,8 +207,7 @@ void buzzer_test()
 
 
 
-void wifi_scan()
-{
+void wifi_scan() {
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
     tft.fillScreen(TFT_BLACK);
     tft.setTextDatum(MC_DATUM);
@@ -244,8 +238,7 @@ void wifi_scan()
     }
 }
 
-void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
-{
+void listDir(fs::FS & fs, const char *dirname, uint8_t levels) {
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
     tft.fillScreen(TFT_BLACK);
     tft.setTextDatum(TL_DATUM);
@@ -281,8 +274,7 @@ void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
     }
 }
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
     delay(1000);
 
@@ -311,6 +303,20 @@ void setup()
     Serial.printf("BUTTON_4:%d\n", BUTTON_4);
 #endif
 
+// // !
+// #define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
+// #define TIME_TO_SLEEP  10        /* Time ESP32 will go to sleep (in seconds) */
+
+//     Wire.begin(I2C_SDA, I2C_SCL);
+//     setupMPU9250();
+//     readMPU9250();
+//     delay(100);
+//     IMU.setSleepEnabled(true);
+//     delay(2000);
+//     esp_sleep_enable_timer_wakeup(uS_TO_S_FACTOR * TIME_TO_SLEEP);
+//     esp_deep_sleep_start();
+// // //!
+
     tft.init();
     tft.setRotation(0);
     tft.fillScreen(TFT_BLACK);
@@ -326,20 +332,20 @@ void setup()
     spisd_test();
     buzzer_test();
     button_init();
+    tft.setTextFont(1);
+    tft.setTextSize(1);
 
     if (I2C_SDA > 0) {
         Wire.begin(I2C_SDA, I2C_SCL);
 #ifdef ENABLE_MPU9250
-        i2c.scanI2Cdevice();
-        mpu.begin();
+        setupMPU9250();
 #endif
     }
     btnscanT.attach_ms(30, button_loop);
 }
 
 
-void loop()
-{
+void loop() {
     switch (state) {
     case 1:
         state = 0;
@@ -359,21 +365,19 @@ void loop()
         break;
     case 3:
 #ifdef ENABLE_MPU9250
-        mpu.getAccelerometer(&acce);
-        mpu.getGyroscope(&gyro);
-        mpu.getMagnetometer(&mag);
 
         tft.setTextColor(TFT_GREEN, TFT_BLACK);
         tft.fillScreen(TFT_BLACK);
         tft.setTextDatum(TL_DATUM);
+        readMPU9250();
 
         snprintf(buff, sizeof(buff), "--  ACC GYR MAG");
         tft.drawString(buff, 0, 0);
-        snprintf(buff, sizeof(buff), "x %d  %d  %d", acce.ax, gyro.gx, mag.mx);
+        snprintf(buff, sizeof(buff), "x %.2f  %.2f  %.2f", (int)1000 * IMU.ax, IMU.gx, IMU.mx);
         tft.drawString(buff, 0, 16);
-        snprintf(buff, sizeof(buff), "y %d  %d  %d", acce.ay, gyro.gy, mag.my);
+        snprintf(buff, sizeof(buff), "y %.2f  %.2f  %.2f", (int)1000 * IMU.ay, IMU.gy, IMU.my);
         tft.drawString(buff, 0, 32);
-        snprintf(buff, sizeof(buff), "z %d  %d  %d", acce.az, gyro.gz, mag.mz);
+        snprintf(buff, sizeof(buff), "z %.2f  %.2f  %.2f", (int)1000 * IMU.az, IMU.gz, IMU.mz);
         tft.drawString(buff, 0, 48);
         delay(200);
 #else

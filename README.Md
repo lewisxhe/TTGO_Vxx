@@ -19,30 +19,31 @@
     // #define T4_V13
     // #define T10_V14
     // #define T10_V18
+    // #define T10_V20
     ```
 
 ## T10
-| Name        | V18    |
-| ----------- | ------ |
-| TFT Driver  | ST7735 |
-| TFT_MISO    | N/A    |
-| TFT_MOSI    | 23     |
-| TFT_SCLK    | 5      |
-| TFT_CS      | 16     |
-| TFT_DC      | 17     |
-| TFT_RST     | N/A    |
-| TFT_BL      | 27     |
-| SD_MISO     | 2      |
-| SD_MOSI     | 15     |
-| SD_SCLK     | 14     |
-| SD_CS       | 13     |
-| I2C_SDA     | 21     |
-| I2C_SCL     | 22     |
-| SPEAKER_OUT | 25     |
-| ADC_IN      | 35     |
-| BUTTON1     | 36     |
-| BUTTON2     | 37     |
-| BUTTON3     | 39     |
+| Name        | V18/V20 |
+| ----------- | ------- |
+| TFT Driver  | ST7735  |
+| TFT_MISO    | N/A     |
+| TFT_MOSI    | 23      |
+| TFT_SCLK    | 5       |
+| TFT_CS      | 16      |
+| TFT_DC      | 17      |
+| TFT_RST     | N/A     |
+| TFT_BL      | 27      |
+| SD_MISO     | 2       |
+| SD_MOSI     | 15      |
+| SD_SCLK     | 14      |
+| SD_CS       | 13      |
+| I2C_SDA     | 21      |
+| I2C_SCL     | 22      |
+| SPEAKER_OUT | 25      |
+| ADC_IN      | 35      |
+| BUTTON1     | 36      |
+| BUTTON2     | 37      |
+| BUTTON3     | 39      |
 
 ## T4 
 | Name        | V12     | V13     |

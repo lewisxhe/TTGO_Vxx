@@ -140,6 +140,12 @@ void button_init()
 #ifdef ENABLE_MPU9250
         IMU.setSleepEnabled(true);
 #endif
+
+#ifndef ST7735_SLPIN
+#define ST7735_SLPIN   0x10
+#define ST7735_DISPOFF 0x28
+#endif
+
         delay(3000);
         tft.writecommand(ST7735_SLPIN);
         tft.writecommand(ST7735_DISPOFF);

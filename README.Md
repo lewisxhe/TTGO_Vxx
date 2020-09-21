@@ -13,7 +13,7 @@
 - Add `#include <User_Setups/TX_Vxx.h>` to  `TFT_eSPI/User_Setup_Select.h`
   
 ## 3.First Use
-- The first time you need to change the board model in `board_def.h`, otherwise the compiler will report an error.
+- The first time you need to change the board model in `LilyGo_Txx.ino`, otherwise the compiler will report an error.
     ```
     // #define T4_V12 
     // #define T4_V13
